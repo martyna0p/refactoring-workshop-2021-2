@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 #include "EventT.hpp"
 #include "IPort.hpp"
@@ -215,17 +216,33 @@ Controller::Segment Controller::getNewHead() const
 
 void Controller::receive(std::unique_ptr<Event> e)
 {
+
+    // std::unique_ptr<Event> jakis = e;
+
+    std::unique_ptr<FoodInd> nowy = std::make_unique(e);
+    // switch (e->getMessageId())
+    // {
+    // case 0x42: 
+    //     break;
+    
+    // default:
+    //     break;
+    // }
+
+    // std::cout << typeid(*dynamic_cast<EventT<TimeoutInd> const&>(*e)).name();
+    std::cout << e->getMessageId() << std::endl << std::endl;
     try {
-        handleTimePassed(*dynamic_cast<EventT<TimeoutInd> const&>(*e));
+        // handleTimePassed(*reinterpret_cast<EventT<TimeoutInd> const&>(*e));
+        handleTimePassed(*reinterpret_cast<EventT<TimeoutInd> const&>(*e));
     } catch (std::bad_cast&) {
         try {
-            handleDirectionChange(*dynamic_cast<EventT<DirectionInd> const&>(*e));
+            handleDirectionChange(*reinterpret_cast<EventT<DirectionInd> const&>(*e));
         } catch (std::bad_cast&) {
             try {
-                handleFoodPositionChange(*dynamic_cast<EventT<FoodInd> const&>(*e));
+                handleFoodPositionChange(*reinterpret_cast<EventT<FoodInd> const&>(*e));
             } catch (std::bad_cast&) {
                 try {
-                    handleNewFood(*dynamic_cast<EventT<FoodResp> const&>(*e));
+                    handleNewFood(*reinterpret_cast<EventT<FoodResp> const&>(*e));
                 } catch (std::bad_cast&) {
                     throw UnexpectedEventException();
                 }
